@@ -1,6 +1,5 @@
 import math
-import requests
-from .pyffmpeg import pre_hand_dir_path
+
 # 下面这段处理CC字幕的代码是我copy来的
 
 
@@ -33,22 +32,3 @@ def json2srt(subtitles):
         # 一个片段
         srt_string += line.format(i, start_str, end_str, content)
     return srt_string
-
-
-# class CCResource:
-#     def __init__(self, cc_url, video_url):
-#         headers = {
-#             'Accept': 'application/json, text/javascript, */*; q=0.01',
-#             'Referer': video_url,
-#             'Sec-Fetch-Dest': 'empty',
-#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-#                           '(KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
-#         }
-#         res = requests.get(url=cc_url, headers=headers)
-#         self.data = res.json()['body']
-#
-#     def write_srt(self, dir_path, file_name):
-#         file_path = "{}{}".format(pre_hand_dir_path(dir_path), file_name)
-#         with open(file_path, "w", encoding='utf-8') as f:
-#             f.write(json2srt(self.data))
-#         return file_path
