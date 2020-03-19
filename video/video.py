@@ -16,10 +16,9 @@ class Video:
         self.page_list = _get_page_list(av, self.av_url)  # 每一集的信息（一个list）， 只需要其中每个的cid，page和part
         self.page_num = len(self.page_list)
 
-    def download(self, path, start=1, end=None, cover=True, keep=True, bilingual=True, insert=False):
+    def download(self, path, pages, cover=True, keep=True, bilingual=True, insert=False):
         path = '{}{}/'.format(standardized_path(path), self.title)
-        page_range = range(start - 1, end) if end else range(start - 1, self.page_num)
-        for page_id in page_range:
+        for page_id in pages:
             part = self.page_list[page_id]
             part_path = '{}page_{}_{}/'.format(path, part['page'], part['part'])
             part_video_path, part_m4s_path, part_cc_path = part_path + 'video/', part_path + 'm4s/', part_path + 'cc/'
@@ -60,4 +59,4 @@ def _get_page_list(av, video_url):
 
 if __name__ == '__main__':
     v = Video('av51815774')
-    v.download("D:\Code", start=2, end=2)
+    v.download("D:\Code", range(v.page_num))
