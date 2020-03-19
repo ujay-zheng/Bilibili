@@ -1,6 +1,6 @@
-class NotFoundError(Exception):
-    pass
+class WithoutCCWarning(Warning):
+    def __init__(self, msg):
+        self.msg = msg
 
-
-class WithoutCCError(Exception):
-    pass
+    def __str__(self):
+        return self.msg
