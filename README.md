@@ -1,5 +1,7 @@
 # Some Tools about Bilibili   
 
+If you want to read Chinese README, please click [here](README.cn.md)   
+
 ## Table of Contents
 - [Background](#background)
 - [Finished](#finished)
