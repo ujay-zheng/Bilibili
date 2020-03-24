@@ -4,8 +4,8 @@ import re
 
 
 class SingleVideoDownloader:
-    def __init__(self, av_url, page):
-        self.av_url = av_url
+    def __init__(self, bv_url, page):
+        self.bv_url = bv_url
         self.page = page
         self.video_url, self.audio_url = self._get_m4s_url()
         self.video_size, self.audio_size = self._get_m4s_size()
@@ -22,7 +22,7 @@ class SingleVideoDownloader:
         params = {
             'p': self.page
         }
-        res = requests.get(url=self.av_url, params=params, headers=headers)
+        res = requests.get(url=self.bv_url, params=params, headers=headers)
         pattern = re.compile(
             '<script>window.__playinfo__.*?"video":.*?"baseUrl":"(.*?)".*?"audio":.*?"baseUrl":"(.*?)"')
         download_url = re.search(pattern, res.text)
@@ -35,9 +35,9 @@ class SingleVideoDownloader:
 
     def _get_resource(self, video_size, audio_size):
         video_header = get_header(
-            'm4s_resource', Host=self.video_url.split('/')[2], Range='bytes=0-' + str(video_size), Referer=self.av_url)
+            'm4s_resource', Host=self.video_url.split('/')[2], Range='bytes=0-' + str(video_size), Referer=self.bv_url)
         audio_header = get_header(
-            'm4s_resource', Host=self.audio_url.split('/')[2], Range='bytes=0-' + str(audio_size), Referer=self.av_url)
+            'm4s_resource', Host=self.audio_url.split('/')[2], Range='bytes=0-' + str(audio_size), Referer=self.bv_url)
         video_response = requests.get(self.video_url, headers=video_header)
         audio_response = requests.get(self.audio_url, headers=audio_header)
         return video_response, audio_response

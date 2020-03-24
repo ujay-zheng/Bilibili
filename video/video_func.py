@@ -9,11 +9,11 @@ import os
 
 
 class Video:
-    def __init__(self, av):
-        self.av = av
-        self.av_url = 'https://www.bilibili.com/video/{}'.format(av)
-        self.title = BeautifulSoup(requests.get(self.av_url).text, 'lxml').head.title.text
-        self.page_list = _get_page_list(av, self.av_url)  # 每一集的信息（一个list）， 只需要其中每个的cid，page和part
+    def __init__(self, bv):
+        self.bv = bv
+        self.bv_url = 'https://www.bilibili.com/video/{}'.format(bv)
+        self.title = BeautifulSoup(requests.get(self.bv_url).text, 'lxml').head.title.text
+        self.page_list = _get_page_list(bv, self.bv_url)  # 每一集的信息（一个list）， 只需要其中每个的cid，page和part
         self.page_num = len(self.page_list)
 
     def download(self, path, pages, cover=True, keep=True, bilingual=True, insert=False):
@@ -23,9 +23,9 @@ class Video:
             part_path = '{}page_{}_{}/'.format(path, part['page'], part['part'])
             part_video_path, part_m4s_path, part_cc_path = part_path + 'video/', part_path + 'm4s/', part_path + 'cc/'
             pre_handle_path(part_video_path, part_m4s_path, part_cc_path)
-            svd = SingleVideoDownloader(self.av_url, part['page'])
+            svd = SingleVideoDownloader(self.bv_url, part['page'])
             svd.download(part_m4s_path)
-            ccd = CCDownloader(self.av[2:], part['cid'], part['page'])
+            ccd = CCDownloader(self.bv[2:], part['cid'], part['page'])
             ccd.download(part_cc_path)
             video_m4s = "{}page{}_video.m4s".format(part_m4s_path, part['page'])
             audio_m4s = "{}page{}_audio.m4s".format(part_m4s_path, part['page'])
@@ -47,16 +47,17 @@ class Video:
                                 part_video_path+"page{}_with_double_cc.mkv".format(part['page']), cover)
 
 
-def _get_page_list(av, video_url):
+def _get_page_list(bv, video_url):
     params = {
-        'aid': av[2:],
+        'bvid': bv,
         'jsonp': 'jsonp'
     }
+    print(params)
     headers = get_header('page_list', Referer=video_url)
     res = requests.get('https://api.bilibili.com/x/player/pagelist', params=params, headers=headers)
     return res.json()['data']
 
 
 if __name__ == '__main__':
-    v = Video('av51815774')
+    v = Video('BV1LE411A7EJ')
     v.download("D:\Code", range(v.page_num))
