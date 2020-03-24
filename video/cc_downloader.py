@@ -6,26 +6,26 @@ import warnings
 
 
 class CCDownloader:
-    def __init__(self, aid, cid, page):
-        self.aid = aid
+    def __init__(self, bvid, cid, page):
+        self.bvid = bvid
         self.cid = cid
         self.page = page
-        self.av_url = 'https://www.bilibili.com/video/av{}'.format(aid)
+        self.bv_url = 'https://www.bilibili.com/video/BV{}'.format(bvid)
         cc_message = self._get_cc_message()
         self.allow_subtitle, self.subtitle_list = cc_message['allow_submit'], cc_message['list']
 
     def _get_cc_message(self):
         message_url = 'https://api.bilibili.com/x/web-interface/view'
         params = {
-            'aid': self.aid,
+            'bvid': self.bvid,
             'cid': self.cid
         }
-        headers = get_header('cc_message', Referer=self.av_url)
+        headers = get_header('cc_message', Referer=self.bv_url)
         res = requests.get(message_url, params=params, headers=headers)
         return res.json()['data']['subtitle']
 
     def _get_resource(self, cc_url):
-        headers = get_header('cc_resource', Referer="{}?p={}".format(self.av_url, self.page))
+        headers = get_header('cc_resource', Referer="{}?p={}".format(self.bv_url, self.page))
         res = requests.get(url=cc_url, headers=headers)
         return res.json()['body']
 
@@ -36,7 +36,7 @@ class CCDownloader:
 
     def download(self, path):
         if not self.allow_subtitle:
-            warnings.warn(WithoutCCWarning("the video({} p {}) has no subtitle".format('av'+self.aid, self.page)))
+            warnings.warn(WithoutCCWarning("the video({} p {}) has no subtitle".format('bv'+self.bvid, self.page)))
         for cc_msg in self.subtitle_list:
             output = path + cc_msg['lan_doc'] + '.srt'
             self._download_single(cc_msg['subtitle_url'], output)
