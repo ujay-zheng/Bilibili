@@ -52,12 +52,6 @@ def _get_page_list(bv, video_url):
         'bvid': bv,
         'jsonp': 'jsonp'
     }
-    print(params)
     headers = get_header('page_list', Referer=video_url)
     res = requests.get('https://api.bilibili.com/x/player/pagelist', params=params, headers=headers)
     return res.json()['data']
-
-
-if __name__ == '__main__':
-    v = Video('BV1LE411A7EJ')
-    v.download("D:\Code", range(v.page_num))
