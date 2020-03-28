@@ -9,12 +9,14 @@ def get_header(name, **kwargs):
 
 
 permission = {
-    'm4s_url': lambda **kwargs: not len(kwargs),
+    'm4s_url': lambda **kwargs: not kwargs,
     'm4s_resource': lambda **kwargs: 'Host' in kwargs.keys()
                                      and 'Range' in kwargs.keys() and 'Referer' in kwargs.keys() and len(kwargs) == 3,
     'page_list': lambda **kwargs: 'Referer' in kwargs.keys() and len(kwargs) == 1,
-    'cc_message': lambda **kwargs: 'Referer' in kwargs.keys() and len(kwargs) == 1,
-    'cc_resource': lambda **kwargs: 'Referer' in kwargs.keys() and len(kwargs) == 1
+    'video_message': lambda **kwargs: 'Referer' in kwargs.keys() and len(kwargs) == 1,
+    'cc_resource': lambda **kwargs: 'Referer' in kwargs.keys() and len(kwargs) == 1,
+    'tags': lambda **kwargs: 'Referer' in kwargs.keys() and len(kwargs) == 1,
+    'bullet_comments': lambda **kwargs: not kwargs
 }
 
 
@@ -49,7 +51,7 @@ headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                       '(KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
     },
-    'cc_message': {
+    'video_message': {
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
@@ -65,5 +67,29 @@ headers = {
         'Sec-Fetch-Dest': 'empty',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                       '(KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36'
+    },
+    'tags': {
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+        'Connection': 'keep-alive',
+        'Host': 'api.bilibili.com',
+        'Referer': None,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
+    },
+    'bullet_comments': {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,'
+                  'image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+        'Connection': 'keep-alive',
+        'Host': 'api.bilibili.com',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'
     }
 }
