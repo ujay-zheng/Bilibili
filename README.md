@@ -1,40 +1,91 @@
-# Some Tools about Bilibili   
+# Bilibili Tools  
 
-If you want to read Chinese README, please click [here](README.cn.md)   
+## 内容列表
+- [背景](#背景)
+- [已完成](#已完成)
+- [安装](#安装)
+- [使用说明](#使用说明)
+- [维护者](#维护者)
 
-## Table of Contents
-- [Background](#background)
-- [Finished](#finished)
-- [Install](#install)
-- [Usage](#usage)
-- [Maintainers](#maintainers)
+## 背景   
+本项目主要是通过爬虫获取Bilibili各种信息，包括个人信息，视频下载，弹幕下载等。具体有多少功能主要取决于我自己有什么需求。但是会尽可能多
+的实现各种功能。这些功能并不会以web应用或者GUI等形式出现，更像是以一个可调用的库的形式出现，这样可以很方便的给我自己去构建很多应用。当
+然我自己感觉这个项目算是自己对于Python的一个实践吧。学了很多，但是平常写的机会挺少的，好些技巧都已经忘记了，借着这次机会也是重新学习和
+巩固（如果不是这次疫情还抽不出这么多时间来写）。最后本项目仅用于学习交流，请勿用于任何商业用途。
 
-## Background   
-This project is mainly to obtain various information of Bilibili with web scraping method, including user information, 
-video download, bullet comment download, etc. Although the size of this project will depend on my own needs, I will 
-finish as many functions as possible.Those features will not be present as a web project or GUI project, but a callable
-library, for it is very convenient for me to build many applications.Of course, I feel that this project is more like a 
-practice of Python for myself for I've learned a lot, but rarely have the opportunity to code.I have forgotten lots of 
-skills and tricks.By the way, I can learn and consolidate those knowledge(Thanks to this outbreak, I have enough time to
-write project).Finally, this project is only for learning and communication, please do not use it for any commercial purpose.      
+## 已完成    
+* 目前所有的代码都是在Windows下完成的，并没有在Linux下进行测试，但是应该没有太大问题。   
+* 视频下载(在2020年2月23号B站开始使用BV号而不是AV号，昨天稍微修把项目修改了一下)
+* 视频信息获取(包括点赞数，弹幕等)
 
-## Finished
-* all the code is completed under Windows and has not been tested under Linux, but there should be no problems.   
-* video download(Blibili replaces av with bv since February 23, I modified my code so it still can work)
-
-## Install   
-First of all, make sure you have installed ffmpeg and remember to add the path to the PATH environment variable.If you 
-don't have it, then go to the [here](http://ffmpeg.org/) to download.After that you need to enter the following command 
-to install the necessary dependencies.
+## 安装   
+首先要确保你的电脑安装了ffmpeg并且设置了环境变量，如果没有，那么请前往它的[官网](http://ffmpeg.org/)下载。在确保你安装了ffmpeg的情况
+下，请在命令行输入如下的命令以此来安装运行该项目所必须的依赖。   
 ```
-pip3 install -r requirement.txt
+pip3 install biget
+```   
+
+## 使用说明   
+首先导入该模块
 ```
+from biget import Video
+```
+然后给Video类的构造函数传递参数来构建video对象，传入的参数就是视频的bv号
+```
+v = Video('BV1fE411F7AF')
+```
+在这个情况下v对象有如下的属性：   
+* bv：视频的bv号码
+* bv_url：视频地址
+* title：视频标题
+* date：视频发布日期
+* page_list：B站的视频可能一个视频有多个p也就是多集，这里是bv号下所有的视频的信息
+* page_num：集数也就是p的数量
+* data：关于视频的信息，在没有调用access方法之前改返回值为None否则返回值为下面的形式
+```
+{
+    'bvid': 视频bv号码,
+    'aid': 视频对应的av号码,
+    'page_num': 同一个bv下p的数量,
+    'title': 视频标题,
+    'date': 发布日期,
+    'owner': up主,
+    'owner_id': up主id,
+    'view': 观看量,
+    'danmaku': 弹幕数量,
+    'reply': 评论数,
+    'favorite': 收藏数量,
+    'coin': 投币数量,
+    'share': 转发数量,
+    'now_rank': 当前排名,
+    'his_rank': 全站排名,
+    'like': 点赞数,
+    'page': 每一个p的信息,
+    'tags': 视频的标签信息,
+}
+```
+* bullet_comments: 视频的弹幕内容，在默认情况下为None，在调用了get_bullet方法之后才会有数据。执行之后该对象的bullet_comments会是
+一个二维list对象，该对象存的每一个元素是一个bs4.element.Tag对象，要想获取里面的文本信息可以使用.text方法。
 
-## Usage   
-I haven't write a demo for each feature, but it will be added later.If you want to know each function, you can see 
-[docs](docs), each function is described in detail in this document.
+对象方法(下面假设类对象是video)：
+* download(pages, path='.', cover=True, keep=True, bilingual=True, insert=False)
+    * pages：要下载该bv号下管理的哪几集视频，需要传入一个可迭代对象，如果想下载全集可以传入range(video.page_num)。如果你想选择跳跃
+    的集数，那么请记住，输入的集数要比真实的小1。例如你想要获取第2集，第5集，那么你可以传入[1, 4]。
+    * path：下载的路径，默认情况下会在当前如路径下载（下载的视频会在给定路径下创建文件夹，以视频名字命名）
+    * cover：当cover为True的时候会如果文件夹里有同名文件会直接覆盖
+    * keep：是否保存m4s文件，因为b站直接爬取保存的是m4s，将m4s做处理之后才是我们的最终文件
+    * bilingual：为True时，视频在合并字幕的时候会合并两个CC字幕，当然这个的前提是该视频有两个CC字幕（当CC字幕数量大于2的时候就会取前
+    两个CC字幕），否则只合并一个
+    * insert：是否将CC字幕作为内嵌字幕，为True是则是作为内嵌字幕，（如果为True可能会需要比较长的时间处理），该参数为True只有在
+    bilingual为false的情况下才有效
+* access()
+* get_bullet(pages)
+    * pages：因为bv下的每一个视频都有自己的弹幕，所以你可以选择要获取的集数，同download需要传入一个可迭代对象，如果想下载全集则传入
+    range(video.page_num)，如果你想选择跳跃的集数，那么请记住，输入的集数要比真实的小1。例如你想要获取第2集，第5集，那么你可以传入
+    [1, 4]。
 
-## Maintainers    
-| Maintainers                                         | Email                                                        |
-| --------------------------------------------------- | ------------------------------------------------------------ |
-|[@ujay-zheng](https://github.com/ujay-zheng) | 897013045@qq.com|
+
+## 维护者    
+| 维护者                                         | 邮箱                                                        |
+| --------------------------------------------- | ------------------------------------------------------------ |
+|[@ujay-zheng](https://github.com/ujay-zheng)   | 897013045@qq.com|
